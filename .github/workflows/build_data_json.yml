@@ -1,0 +1,53 @@
+name: Build KEV data.json
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - known_exploited_vulnerabilities.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate docs/data.json
+        run: |
+          python scripts/build_data_json.py \
+            --src known_exploited_vulnerabilities.json \
+            --out docs/data.json
+
+      - name: Commit data.json if changed
+        run: |
+          git config user.name "kev-sync-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/data.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(data): refresh docs/data.json for ${{ github.sha }}"
+            git push
+          else
+            echo "No changes to data.json"
+          fi
+
+      # Optional: If you want to build/deploy GitHub Pages here:
+      # - name: Setup Pages
+      #   uses: actions/configure-pages@v3
+      # - name: Upload artifact
+      #   uses: actions/upload-pages-artifact@v2
+      #   with:
+      #     path: docs
+      # - name: Deploy to GitHub Pages
+      #   uses: actions/deploy-pages@v4

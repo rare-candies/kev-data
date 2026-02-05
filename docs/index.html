@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KEV Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npmtstrap.min.css
+  <!-- DataTables CSS -->
+  https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css
+  <style>
+    body { padding: 20px; }
+    .chart-container { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="mb-4">Known Exploited Vulnerabilities (KEV) Dashboard</h1>
+
+    <!-- Filter -->
+    <div class="mb-3">
+      <label for="ransomwareFilter" class="form-label">Filter by Ransomware Tag:</label>
+      <select id="ransomwareFilter" class="form-select" style="width:200px;">
+        <option value="">All</option>
+        <option value="true">True</option>
+        <option value="false">False</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <table id="kevTable" class="display table table-striped" style="width:100%">
+      <thead>
+        <tr>
+          <th>CVE ID</th>
+          <th>Vendor</th>
+          <th>Product</th>
+          <th>Ransomware Use</th>
+          <th>Due Date</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Timeline Chart -->
+    <div class="chart-container">
+      <h3>Timeline of KEV Changes</h3>
+      <div id="timelineChart" style="height:400px;"></div>
+    </div>
+  </div>
+
+  <!-- jQuery + DataTables -->
+  <script src="https://code.jquery.com/jquery-3.7ript>
+  https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js</script>
+  <!-- Plotly -->
+  https://cdn.plot.ly/plotly-latest.min.js</script>
+
+  <script>
+    // Load KEV data from JSON file
+    fetch('data.json')
+      .then(response => response.json())
+      .then(data => {
+        // Populate DataTable
+        const tableBody = $('#kevTable tbody');
+        data.forEach(item => {
+          tableBody.append(`
+            <tr>
+              <td>${item.cveID}</td>
+              <td>${item.vendorProject}</td>
+              <td>${item.product}</td>
+              <td>${item.knownRansomwareCampaignUse}</td>
+              <td>${item.dueDate || ''}</td>
+              <td>${item.notes || ''}</td>
+            </tr>
+          `);
+        });
+
+        const dataTable = $('#kevTable').DataTable();
+
+        // Filter by ransomware tag
+        $('#ransomwareFilter').on('change', function() {
+          const val = $(this).val();
+          dataTable.column(3).search(val).draw();
+        });
+
+        // Build timeline chart (count of CVEs added per date)
+        const dateCounts = {};
+        data.forEach(item => {
+          const date = item.dateAdded || 'Unknown';
+          dateCounts[date] = (dateCounts[date] || 0) + 1;
+        });
+
+        const dates = Object.keys(dateCounts);
+        const counts = Object.values(dateCounts);
+
+        const trace = {
+          x: dates,
+          y: counts,
+          type: 'bar',
+          marker: { color: '#007bff' }
+        };
+
+        Plotly.newPlot('timelineChart', [trace], {
+          title: 'CVEs Added Over Time',
+          xaxis: { title: 'Date Added' },
+          yaxis: { title: 'Count' }
+        });
+      });
+  </script>
+</body>
+</html>

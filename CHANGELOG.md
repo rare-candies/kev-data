@@ -20,3 +20,63 @@ Each entry includes:
 ---
 
 ## Example Entry
+## 2026-02-05 ([Commit 09c59cb](https://github.com/cisagov/kev-data))
+**Source:** Update kev_changelog.py
+
+### Ransomware Tag Changes (Live Update)
+- (none)
+
+### Added (Live Update)
+- (none)
+
+### Modified
+- (none)
+
+### Removed (Live Update)
+- (none)
+
+### Files
+- `known_exploited_vulnerabilities.json`
+- `known_exploited_vulnerabilities.csv`
+
+### Last 14 Days Summary
+- **Ransomware Tag Changes:**
+  - CVE-2024-30088: Unknown → Known
+  - CVE-2024-49039: Unknown → Known
+  - CVE-2024-51567: Unknown → Known
+  - CVE-2024-9680: Unknown → Known
+  - CVE-2025-22225: Unknown → Known
+
+- **Added:**
+  - CVE-2024-37079
+  - CVE-2018-14634
+  - CVE-2025-52691
+  - CVE-2026-23760
+  - CVE-2026-24061
+  - CVE-2026-21509
+  - CVE-2026-24858
+  - CVE-2026-1281
+  - CVE-2019-19006
+  - CVE-2021-39935
+  - CVE-2025-64328
+  - CVE-2025-40551
+
+- **Modified (field-level changes exist):**
+  - CVE-2026-21509
+    - shortDescription: Microsoft Office contains a security feature bypass vulnerability in which reliance on untrusted inputs in a security decision in Microsoft Office could allow an unauthorized attacker to bypass a security feature locally. → Microsoft Office contains a security feature bypass vulnerability in which reliance on untrusted inputs in a security decision in Microsoft Office could allow an unauthorized attacker to bypass a security feature locally. Some of the impacted product(s) could be end-of-life (EoL) and/or end-of-service (EoS). Users are advised to discontinue use and/or transition to a supported version.
+  - CVE-2024-30088
+    - knownRansomwareCampaignUse: Unknown → Known
+  - CVE-2024-49039
+    - knownRansomwareCampaignUse: Unknown → Known
+  - CVE-2024-51567
+    - knownRansomwareCampaignUse: Unknown → Known
+  - CVE-2024-9680
+    - knownRansomwareCampaignUse: Unknown → Known
+  - CVE-2025-22225
+    - knownRansomwareCampaignUse: Unknown → Known
+
+- **Removed:**
+  - CVE-2026-1281
+
+---
+

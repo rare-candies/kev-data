@@ -1,4 +1,4 @@
-name: Sync KEV data v2
+name: Sync KEV data
 
 on:
   schedule:
@@ -28,9 +28,9 @@ jobs:
         run: |
           set -euo pipefail
           echo "Downloading CSV from $CSV_URL..."
-          curl --retry 3 --retry-delay 5 -fSLo "${CSV_FILE}.tmp" "$CSV_URL"
+          curl --retry 3 --retry-delay 5 --connect-timeout 30 --max-time 60 -fSLo "${CSV_FILE}.tmp" "$CSV_URL"
           echo "Downloading JSON from $JSON_URL..."
-          curl --retry 3 --retry-delay 5 -fSLo "${JSON_FILE}.tmp" "$JSON_URL"
+          curl --retry 3 --retry-delay 5 --connect-timeout 30 --max-time 60 -fSLo "${JSON_FILE}.tmp" "$JSON_URL"
 
           changed_files=""
 
@@ -52,19 +52,21 @@ jobs:
             echo "JSON unchanged."
           fi
 
-          echo "$changed_files" > .changed_files
+          echo "$changed_files" | xargs > .changed_files
+          echo "Changed files:"
+          cat .changed_files
 
       - name: Commit only changed files
         shell: bash
         run: |
           set -euo pipefail
-          changed_files="$(tr -s ' ' < .changed_files || echo '')"
+          changed_files="$(tr -s ' ' < .changed_files | xargs || echo '')"
           if [ -n "$changed_files" ]; then
             git config user.name  "kev-sync-bot"
             git config user.email "actions@users.noreply.github.com"
-            git add "$changed_files"
+            git add $changed_files
             echo "Staging: $changed_files"
-            git commit -m "chore: sync KEV data $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            git commit -m "Add Updated KEV Files for $(date -u +'%Y-%m-%d')"
             git push
             echo "Changes committed & pushed."
           else
